@@ -46,3 +46,10 @@ module Map =
             Json.deserializeEx<Map<string, obj>> config json
 
         Assert.AreEqual(expected, actual)
+
+    [<Test>]
+    let ``Map<string,null> serialization`` () =
+        let expected = """{"key1":[null],"key2":null}"""
+        let value = Map.ofList [("key1", [()] :> obj); ("key2", null)]
+        let actual = Json.serializeU value
+        Assert.AreEqual(expected, actual)
