@@ -3,6 +3,7 @@
 module Default =
     open System
     open NUnit.Framework
+    open NUnit.Framework.Legacy
 
     type AnnotatedRecord =
         { [<JsonField(DefaultValue = "The default value")>]
@@ -15,4 +16,4 @@ module Default =
 
         let json = "{}"
         let actual = Json.deserialize<AnnotatedRecord> json
-        Assert.AreEqual(expected, actual)
+        ClassicAssert.AreEqual(expected, actual)

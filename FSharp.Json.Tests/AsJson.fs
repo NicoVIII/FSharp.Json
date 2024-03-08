@@ -3,6 +3,7 @@
 module AsJson =
     open System
     open NUnit.Framework
+    open NUnit.Framework.Legacy
 
     type AsJsonRecord =
         { [<JsonField(AsJson = true)>]
@@ -15,7 +16,7 @@ module AsJson =
 
         let actual = Json.serializeU value
         let expected = """{"value":{"property":"The value"}}"""
-        Assert.AreEqual(expected, actual)
+        ClassicAssert.AreEqual(expected, actual)
 
     [<Test>]
     let ``AsJson member deserialization - object`` () =
@@ -25,21 +26,21 @@ module AsJson =
         let expected =
             { AsJsonRecord.value = """{"property":"The value"}""" }
 
-        Assert.AreEqual(expected, actual)
+        ClassicAssert.AreEqual(expected, actual)
 
     [<Test>]
     let ``AsJson member serialization - string`` () =
         let expected = """{"value":"The value"}"""
         let value = { AsJsonRecord.value = "The value" }
         let actual = Json.serializeU value
-        Assert.AreEqual(expected, actual)
+        ClassicAssert.AreEqual(expected, actual)
 
     [<Test>]
     let ``AsJson member deserialization - string`` () =
         let json = """{"value":"The value"}"""
         let expected = { AsJsonRecord.value = "The value" }
         let actual = Json.deserialize<AsJsonRecord> json
-        Assert.AreEqual(expected, actual)
+        ClassicAssert.AreEqual(expected, actual)
 
     type AsJsonOptionalRecord =
         { [<JsonField(AsJson = true)>]
@@ -50,7 +51,7 @@ module AsJson =
         let value = { AsJsonOptionalRecord.value = None }
         let actual = Json.serializeU value
         let expected = """{"value":null}"""
-        Assert.AreEqual(expected, actual)
+        ClassicAssert.AreEqual(expected, actual)
 
     [<Test>]
     let ``AsJson member deserialization - null`` () =
@@ -58,4 +59,4 @@ module AsJson =
             Json.deserialize<AsJsonOptionalRecord> """{"value":null}"""
 
         let expected = { AsJsonOptionalRecord.value = None }
-        Assert.AreEqual(expected, actual)
+        ClassicAssert.AreEqual(expected, actual)

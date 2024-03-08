@@ -3,6 +3,7 @@
 module Object =
     open System
     open NUnit.Framework
+    open NUnit.Framework.Legacy
 
     type ObjectRecord = { value: obj }
 
@@ -18,7 +19,7 @@ module Object =
         let actual =
             Json.deserializeEx<ObjectRecord> config json
 
-        Assert.AreEqual(expected, actual)
+        ClassicAssert.AreEqual(expected, actual)
 
     [<Test>]
     let ``Object with null serialization/deserialization`` () =
@@ -38,4 +39,4 @@ module Object =
         let actual =
             Json.deserializeEx<ObjectRecord> config json
 
-        Assert.AreEqual(expected, actual)
+        ClassicAssert.AreEqual(expected, actual)

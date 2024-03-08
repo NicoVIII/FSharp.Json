@@ -3,6 +3,7 @@
 module Record =
     open System
     open NUnit.Framework
+    open NUnit.Framework.Legacy
 
     type TheRecord =
         { theString: string
@@ -48,7 +49,7 @@ module Record =
 
         let json = Json.serialize (expected)
         let actual = Json.deserialize<TheRecord> json
-        Assert.AreEqual(expected, actual)
+        ClassicAssert.AreEqual(expected, actual)
 
     type InnerRecord = { value: string }
 
@@ -61,7 +62,7 @@ module Record =
 
         let json = Json.serialize (expected)
         let actual = Json.deserialize<OuterRecord> json
-        Assert.AreEqual(expected, actual)
+        ClassicAssert.AreEqual(expected, actual)
 
     type AnnotatedRecord =
         { [<JsonField(Name = "value")>]
@@ -72,14 +73,14 @@ module Record =
         let expected = """{"value":"The string"}"""
         let value = { AnnotatedRecord.Value = "The string" }
         let actual = Json.serializeU value
-        Assert.AreEqual(expected, actual)
+        ClassicAssert.AreEqual(expected, actual)
 
     [<Test>]
     let ``Record custom field name deserialization`` () =
         let json = """{"value":"The string"}"""
         let expected = { AnnotatedRecord.Value = "The string" }
         let actual = Json.deserialize<AnnotatedRecord> json
-        Assert.AreEqual(expected, actual)
+        ClassicAssert.AreEqual(expected, actual)
 
     type UpperCaseRecord = { SomeValue: string }
 
@@ -94,7 +95,7 @@ module Record =
             JsonConfig.create (unformatted = true, jsonFieldNaming = Json.snakeCase)
 
         let actual = Json.serializeEx config value
-        Assert.AreEqual(expected, actual)
+        ClassicAssert.AreEqual(expected, actual)
 
     [<Test>]
     let ``Record field name deserialization with snake case naming`` () =
@@ -109,4 +110,4 @@ module Record =
         let actual =
             Json.deserializeEx<UpperCaseRecord> config json
 
-        Assert.AreEqual(expected, actual)
+        ClassicAssert.AreEqual(expected, actual)

@@ -3,13 +3,14 @@
 module Map =
     open System
     open NUnit.Framework
+    open NUnit.Framework.Legacy
 
     [<Test>]
     let ``Map<string,string> serialization`` () =
         let expected = """{"key":"value"}"""
         let value = Map.ofList [ ("key", "value") ]
         let actual = Json.serializeU value
-        Assert.AreEqual(expected, actual)
+        ClassicAssert.AreEqual(expected, actual)
 
     [<Test>]
     let ``Map<string,string> deserialization`` () =
@@ -19,7 +20,7 @@ module Map =
         let actual =
             Json.deserialize<Map<string, string>> json
 
-        Assert.AreEqual(expected, actual)
+        ClassicAssert.AreEqual(expected, actual)
 
     [<Test>]
     let ``Map<string,obj> serialization`` () =
@@ -30,7 +31,7 @@ module Map =
                          ("key2", 123 :> obj) ]
 
         let actual = Json.serializeU value
-        Assert.AreEqual(expected, actual)
+        ClassicAssert.AreEqual(expected, actual)
 
     [<Test>]
     let ``Map<string,obj> deserialization`` () =
@@ -45,11 +46,11 @@ module Map =
         let actual =
             Json.deserializeEx<Map<string, obj>> config json
 
-        Assert.AreEqual(expected, actual)
+        ClassicAssert.AreEqual(expected, actual)
 
     [<Test>]
     let ``Map<string,null> serialization`` () =
         let expected = """{"key1":[null],"key2":null}"""
         let value = Map.ofList [("key1", [()] :> obj); ("key2", null)]
         let actual = Json.serializeU value
-        Assert.AreEqual(expected, actual)
+        ClassicAssert.AreEqual(expected, actual)

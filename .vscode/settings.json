@@ -1,4 +1,6 @@
 {
+    "dotnet.defaultSolution": "FSharp.Json.sln",
     "editor.formatOnSave": true,
+    "files.trimFinalNewlines": true,
     "json.format.keepLines": true
 }

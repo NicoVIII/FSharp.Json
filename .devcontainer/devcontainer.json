@@ -16,8 +16,12 @@
 			"extensions": [
 				"editorconfig.editorconfig",
 				"ms-dotnettools.csharp",
-				"ionide.ionide-fsharp",
-			]
+				"ionide.ionide-fsharp"
+			],
+			"settings": {
+				"FSharp.dotnetRoot": "/usr/bin",
+				"FSharp.useSdkScripts": true
+			}
 		}
 	},
 

@@ -2,6 +2,7 @@
 
 module Enum =
     open NUnit.Framework
+    open NUnit.Framework.Legacy
 
     type NumberEnum =
         | One = 1
@@ -17,21 +18,21 @@ module Enum =
 
         let json = Json.serialize (expected)
         let actual = Json.deserialize<TheNumberEnum> json
-        Assert.AreEqual(expected, actual)
+        ClassicAssert.AreEqual(expected, actual)
 
     [<Test>]
     let ``Enum deserialization from string`` () =
         let expected = { TheNumberEnum.value = NumberEnum.One }
         let json = """{"value":"One"}"""
         let actual = Json.deserialize<TheNumberEnum> json
-        Assert.AreEqual(expected, actual)
+        ClassicAssert.AreEqual(expected, actual)
 
     [<Test>]
     let ``Enum serialization to string`` () =
         let value = { TheNumberEnum.value = NumberEnum.Two }
         let actual = Json.serializeU value
         let expected = """{"value":"Two"}"""
-        Assert.AreEqual(expected, actual)
+        ClassicAssert.AreEqual(expected, actual)
 
     [<Test>]
     let ``Enum serialization - config setting`` () =
@@ -42,7 +43,7 @@ module Enum =
 
         let actual = Json.serializeEx config value
         let expected = """{"value":2}"""
-        Assert.AreEqual(expected, actual)
+        ClassicAssert.AreEqual(expected, actual)
 
     type LetterEnum =
         | LetterA = 'a'
@@ -63,7 +64,7 @@ module Enum =
         let actual =
             Json.deserialize<TheAttributedLetterEnum> json
 
-        Assert.AreEqual(expected, actual)
+        ClassicAssert.AreEqual(expected, actual)
 
     [<Test>]
     let ``Letter Enum value serialization`` () =
@@ -72,7 +73,7 @@ module Enum =
 
         let actual = Json.serializeU value
         let expected = """{"value":"c"}"""
-        Assert.AreEqual(expected, actual)
+        ClassicAssert.AreEqual(expected, actual)
 
     type TheAttributedNumberEnum =
         { [<JsonField(EnumValue = EnumMode.Value)>]
@@ -88,7 +89,7 @@ module Enum =
         let actual =
             Json.deserialize<TheAttributedNumberEnum> json
 
-        Assert.AreEqual(expected, actual)
+        ClassicAssert.AreEqual(expected, actual)
 
     [<Test>]
     let ``Number Enum value serialization`` () =
@@ -97,4 +98,4 @@ module Enum =
 
         let actual = Json.serializeU value
         let expected = """{"value":3}"""
-        Assert.AreEqual(expected, actual)
+        ClassicAssert.AreEqual(expected, actual)

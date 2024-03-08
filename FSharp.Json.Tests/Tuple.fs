@@ -2,6 +2,7 @@
 
 module Tuple =
     open NUnit.Framework
+    open NUnit.Framework.Legacy
 
     type TheTuple = { value: string * int * bool }
 
@@ -12,7 +13,7 @@ module Tuple =
 
         let json = Json.serialize (expected)
         let actual = Json.deserialize<TheTuple> json
-        Assert.AreEqual(expected, actual)
+        ClassicAssert.AreEqual(expected, actual)
 
     [<Test>]
     let ``Tuple serialized as array`` () =
@@ -21,7 +22,7 @@ module Tuple =
 
         let actual = Json.serializeU value
         let expected = """{"value":["The string",123,true]}"""
-        Assert.AreEqual(expected, actual)
+        ClassicAssert.AreEqual(expected, actual)
 
     type TheTupleWithOption = { value: string * int option * bool }
 
@@ -32,7 +33,7 @@ module Tuple =
 
         let actual = Json.serializeU value
         let expected = """{"value":["The string",null,true]}"""
-        Assert.AreEqual(expected, actual)
+        ClassicAssert.AreEqual(expected, actual)
 
     [<Test>]
     let ``Tuple with optional deserialization`` () =
@@ -44,4 +45,4 @@ module Tuple =
         let actual =
             Json.deserialize<TheTupleWithOption> json
 
-        Assert.AreEqual(expected, actual)
+        ClassicAssert.AreEqual(expected, actual)

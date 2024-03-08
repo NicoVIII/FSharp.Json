@@ -2,6 +2,7 @@
 
 module Option =
     open NUnit.Framework
+    open NUnit.Framework.Legacy
 
     type TheOption = { value: string option }
 
@@ -10,21 +11,21 @@ module Option =
         let expected = { TheOption.value = None }
         let json = Json.serialize expected
         let actual = Json.deserialize<TheOption> json
-        Assert.AreEqual(expected, actual)
+        ClassicAssert.AreEqual(expected, actual)
 
     [<Test>]
     let ``Option None deserialization from null`` () =
         let expected = { TheOption.value = None }
         let json = """{"value":null}"""
         let actual = Json.deserialize<TheOption> json
-        Assert.AreEqual(expected, actual)
+        ClassicAssert.AreEqual(expected, actual)
 
     [<Test>]
     let ``Option None deserialization from omitted`` () =
         let expected = { TheOption.value = None }
         let json = """{}"""
         let actual = Json.deserialize<TheOption> json
-        Assert.AreEqual(expected, actual)
+        ClassicAssert.AreEqual(expected, actual)
 
     [<Test>]
     let ``Option None serialization into null by default`` () =
@@ -32,14 +33,14 @@ module Option =
             Json.serializeU { TheOption.value = None }
 
         let expected = """{"value":null}"""
-        Assert.AreEqual(expected, actual)
+        ClassicAssert.AreEqual(expected, actual)
 
     [<Test>]
     let ``Option Some serialization/deserialization`` () =
         let expected = { TheOption.value = Some "The string" }
         let json = Json.serialize (expected)
         let actual = Json.deserialize<TheOption> json
-        Assert.AreEqual(expected, actual)
+        ClassicAssert.AreEqual(expected, actual)
 
     type TheNonOption = { value: string }
 
@@ -50,9 +51,9 @@ module Option =
         let ex =
             Assert.Throws<JsonDeserializationError>(fun () -> Json.deserialize<TheNonOption> json |> ignore)
 
-        Assert.IsNotNull(ex)
+        ClassicAssert.IsNotNull(ex)
         let expectedPath = "value"
-        Assert.AreEqual(expectedPath, ex.Path.toString ())
+        ClassicAssert.AreEqual(expectedPath, ex.Path.toString ())
 
     [<Test>]
     let ``Omitted value is not allowed for non option type`` () =
@@ -61,9 +62,9 @@ module Option =
         let ex =
             Assert.Throws<JsonDeserializationError>(fun () -> Json.deserialize<TheNonOption> json |> ignore)
 
-        Assert.IsNotNull(ex)
+        ClassicAssert.IsNotNull(ex)
         let expectedPath = "value"
-        Assert.AreEqual(expectedPath, ex.Path.toString ())
+        ClassicAssert.AreEqual(expectedPath, ex.Path.toString ())
 
     let assertDeserializationThrows<'T> (config: JsonConfig) (json: string) =
         Assert.Throws<JsonDeserializationError>(fun () -> Json.deserializeEx<'T> config json |> ignore)
@@ -79,7 +80,7 @@ module Option =
             assertDeserializationThrows<TheOption> config json
 
         let expectedPath = "value"
-        Assert.AreEqual(expectedPath, ex.Path.toString ())
+        ClassicAssert.AreEqual(expectedPath, ex.Path.toString ())
 
     [<Test>]
     let ``JsonConfig.deserializeOption - member with None value is ommitted`` () =
@@ -92,7 +93,7 @@ module Option =
         let actual =
             Json.deserializeEx<TheOption> config json
 
-        Assert.AreEqual(expected, actual)
+        ClassicAssert.AreEqual(expected, actual)
 
     [<Test>]
     let ``JsonConfig.deserializeOption - member is null`` () =
@@ -105,7 +106,7 @@ module Option =
         let actual =
             Json.deserializeEx<TheOption> config json
 
-        Assert.AreEqual(expected, actual)
+        ClassicAssert.AreEqual(expected, actual)
 
     [<Test>]
     let ``JsonConfig.serializeNone - member with None value as null`` () =
@@ -116,7 +117,7 @@ module Option =
             Json.serializeEx config { TheOption.value = None }
 
         let expected = """{"value":null}"""
-        Assert.AreEqual(expected, actual)
+        ClassicAssert.AreEqual(expected, actual)
 
     [<Test>]
     let ``JsonConfig.serializeNone - member with None value is ommitted`` () =
@@ -127,4 +128,4 @@ module Option =
             Json.serializeEx config { TheOption.value = None }
 
         let expected = """{}"""
-        Assert.AreEqual(expected, actual)
+        ClassicAssert.AreEqual(expected, actual)

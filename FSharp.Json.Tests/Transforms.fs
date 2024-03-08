@@ -3,6 +3,7 @@
 module Transforms =
     open System
     open NUnit.Framework
+    open NUnit.Framework.Legacy
 
     type DateTimeRecord =
         { [<JsonField(Transform = typeof<Transforms.DateTimeEpoch>)>]
@@ -14,7 +15,7 @@ module Transforms =
             Json.serializeU { DateTimeRecord.value = new DateTime(2017, 11, 5, 22, 50, 45) }
 
         let expected = """{"value":1509922245}"""
-        Assert.AreEqual(expected, actual)
+        ClassicAssert.AreEqual(expected, actual)
 
     [<Test>]
     let ``DateTime as Epoch deserialization`` () =
@@ -23,7 +24,7 @@ module Transforms =
 
         let json = """{"value":1509922245}"""
         let actual = Json.deserialize<DateTimeRecord> json
-        Assert.AreEqual(expected, actual)
+        ClassicAssert.AreEqual(expected, actual)
 
     type DateTimeOffsetRecord =
         { [<JsonField(Transform = typeof<Transforms.DateTimeOffsetEpoch>)>]
@@ -35,7 +36,7 @@ module Transforms =
             Json.serializeU { DateTimeOffsetRecord.value = new DateTimeOffset(2017, 11, 5, 22, 50, 45, TimeSpan(0L)) }
 
         let expected = """{"value":1509922245}"""
-        Assert.AreEqual(expected, actual)
+        ClassicAssert.AreEqual(expected, actual)
 
     [<Test>]
     let ``DateTimeOffset as Epoch deserialization`` () =
@@ -47,7 +48,7 @@ module Transforms =
         let actual =
             Json.deserialize<DateTimeOffsetRecord> json
 
-        Assert.AreEqual(expected, actual)
+        ClassicAssert.AreEqual(expected, actual)
 
     type UriRecord =
         { [<JsonField(Transform = typeof<Transforms.UriTransform>)>]
@@ -59,7 +60,7 @@ module Transforms =
             Json.serializeU { UriRecord.value = Uri("http://localhost:8080/") }
 
         let expected = """{"value":"http://localhost:8080/"}"""
-        Assert.AreEqual(expected, actual)
+        ClassicAssert.AreEqual(expected, actual)
 
     [<Test>]
     let ``System.Uri as string deserialization`` () =
@@ -68,7 +69,7 @@ module Transforms =
 
         let json = """{"value":"http://localhost:8080/"}"""
         let actual = Json.deserialize<UriRecord> json
-        Assert.AreEqual(expected, actual)
+        ClassicAssert.AreEqual(expected, actual)
 
     [<Test>]
     let ``Corrupted uri throws exception`` () =

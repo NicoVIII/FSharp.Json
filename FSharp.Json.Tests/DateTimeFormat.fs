@@ -3,6 +3,7 @@
 module DateTimeFormat =
     open System
     open NUnit.Framework
+    open NUnit.Framework.Legacy
 
     type TheDateTimeOffset = { value: DateTimeOffset }
 
@@ -16,7 +17,7 @@ module DateTimeFormat =
 
         let theRecord = { TheDateTimeOffset.value = value }
         let actual = Json.serializeU (theRecord)
-        Assert.AreEqual(expected, actual)
+        ClassicAssert.AreEqual(expected, actual)
 
     [<Test>]
     let ``DateTimeOffset member deserialization without offset`` () =
@@ -27,7 +28,7 @@ module DateTimeFormat =
 
         let expected = { TheDateTimeOffset.value = value }
         let actual = Json.deserialize<TheDateTimeOffset> json
-        Assert.AreEqual(expected, actual)
+        ClassicAssert.AreEqual(expected, actual)
 
     type DateTimeFormat =
         { [<JsonField(DateTimeFormat = "yyyy-MM-ddTHH:mm:ss")>]
@@ -41,4 +42,4 @@ module DateTimeFormat =
             Json.deserialize<DateTimeFormat> expected
 
         let actual = Json.serializeU (value)
-        Assert.AreEqual(expected, actual)
+        ClassicAssert.AreEqual(expected, actual)
