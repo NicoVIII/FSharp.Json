@@ -161,7 +161,7 @@ module Union =
         let json = Json.serialize(expected)
         let actual = Json.deserialize<TheDiscriminatorUnion> json
         Assert.AreEqual(expected, actual)
-            
+
     type SingleCaseUnion = SingleCase of string
 
     type SingleCaseRecord = { value: SingleCaseUnion }
