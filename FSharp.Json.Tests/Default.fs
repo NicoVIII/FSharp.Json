@@ -5,14 +5,16 @@ module Default =
     open NUnit.Framework
     open NUnit.Framework.Legacy
 
-    type AnnotatedRecord =
-        { [<JsonField(DefaultValue = "The default value")>]
-          Value: string }
+    type AnnotatedRecord = {
+        [<JsonField(DefaultValue = "The default value")>]
+        Value: string
+    }
 
     [<Test>]
     let ``Default value for omitted field`` () =
-        let expected =
-            { AnnotatedRecord.Value = "The default value" }
+        let expected = {
+            AnnotatedRecord.Value = "The default value"
+        }
 
         let json = "{}"
         let actual = Json.deserialize<AnnotatedRecord> json

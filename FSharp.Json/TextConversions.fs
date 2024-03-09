@@ -35,50 +35,43 @@ module private Helpers =
 #endif
     // note on the regex we have /Date()/ and not \/Date()\/ because the \/ escaping
     // is already taken care of before AsDateTime is called
-    let msDateRegex =
-        lazy (Regex(@"^/Date\((-?\d+)(?:[-+]\d+)?\)/$", regexOptions))
+    let msDateRegex = lazy (Regex(@"^/Date\((-?\d+)(?:[-+]\d+)?\)/$", regexOptions))
 
 /// Conversions from string to string/int/int64/decimal/float/boolean/datetime/guid options
 type internal TextConversions private () =
     /// `NaN` `NA` `N/A` `#N/A` `:` `-` `TBA` `TBD`
-    static member val DefaultMissingValues =
-        [| "NaN"
-           "NA"
-           "N/A"
-           "#N/A"
-           ":"
-           "-"
-           "TBA"
-           "TBD" |]
+    static member val DefaultMissingValues = [| "NaN"; "NA"; "N/A"; "#N/A"; ":"; "-"; "TBA"; "TBD" |]
 
     /// `%` `‰` `‱`
     static member val DefaultNonCurrencyAdorners = [| '%'; '‰'; '‱' |] |> Set.ofArray
 
     /// `¤` `$` `¢` `£` `¥` `₱` `﷼` `₤` `₭` `₦` `₨` `₩` `₮` `€` `฿` `₡` `៛` `؋` `₴` `₪` `₫` `₹` `ƒ`
     static member val DefaultCurrencyAdorners =
-        [| '¤'
-           '$'
-           '¢'
-           '£'
-           '¥'
-           '₱'
-           '﷼'
-           '₤'
-           '₭'
-           '₦'
-           '₨'
-           '₩'
-           '₮'
-           '€'
-           '฿'
-           '₡'
-           '៛'
-           '؋'
-           '₴'
-           '₪'
-           '₫'
-           '₹'
-           'ƒ' |]
+        [|
+            '¤'
+            '$'
+            '¢'
+            '£'
+            '¥'
+            '₱'
+            '﷼'
+            '₤'
+            '₭'
+            '₦'
+            '₨'
+            '₩'
+            '₮'
+            '€'
+            '฿'
+            '₡'
+            '៛'
+            '؋'
+            '₴'
+            '₪'
+            '₫'
+            '₹'
+            'ƒ'
+        |]
         |> Set.ofArray
 
     static member val private DefaultRemovableAdornerCharacters =
@@ -91,18 +84,12 @@ type internal TextConversions private () =
     static member private RemoveAdorners(value: string) =
         String(
             value.ToCharArray()
-            |> Array.filter (
-                not
-                << TextConversions.DefaultRemovableAdornerCharacters.Contains
-            )
+            |> Array.filter (not << TextConversions.DefaultRemovableAdornerCharacters.Contains)
         )
 
     /// Turns empty or null string value into None, otherwise returns Some
     static member AsString str =
-        if String.IsNullOrWhiteSpace str then
-            None
-        else
-            Some str
+        if String.IsNullOrWhiteSpace str then None else Some str
 
     static member AsInteger cultureInfo text =
         Int32.TryParse(TextConversions.RemoveAdorners text, NumberStyles.Integer, cultureInfo)
@@ -119,11 +106,7 @@ type internal TextConversions private () =
     /// if useNoneForMissingValues is true, NAs are returned as None, otherwise Some Double.NaN is used
     static member AsFloat missingValues useNoneForMissingValues cultureInfo (text: string) =
         match text.Trim() with
-        | OneOfIgnoreCase missingValues ->
-            if useNoneForMissingValues then
-                None
-            else
-                Some Double.NaN
+        | OneOfIgnoreCase missingValues -> if useNoneForMissingValues then None else Some Double.NaN
         | _ ->
             Double.TryParse(text, NumberStyles.Any, cultureInfo)
             |> asOption
@@ -153,22 +136,12 @@ type internal TextConversions private () =
         if matchesMS.Success then
             matchesMS.Groups.[1].Value
             |> Double.Parse
-            |> DateTime(
-                1970,
-                1,
-                1,
-                0,
-                0,
-                0,
-                DateTimeKind.Utc
-            )
-                .AddMilliseconds
+            |> DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).AddMilliseconds
             |> Some
         else
             // Parse ISO 8601 format, fixing time zone if needed
             let dateTimeStyles =
-                DateTimeStyles.AllowWhiteSpaces
-                ||| DateTimeStyles.RoundtripKind
+                DateTimeStyles.AllowWhiteSpaces ||| DateTimeStyles.RoundtripKind
 
             match DateTime.TryParse(text, cultureInfo, dateTimeStyles) with
             | true, d ->
@@ -189,10 +162,8 @@ module internal UnicodeHelper =
         let HIGH_TEN_BIT_MASK = 0xFFC00u // 1111|1111|1100|0000|0000
         let LOW_TEN_BIT_MASK = 0x003FFu // 0000|0000|0011|1111|1111
 
-        let leadSurrogate =
-            (codePoint &&& HIGH_TEN_BIT_MASK >>> 10) + 0xD800u
+        let leadSurrogate = (codePoint &&& HIGH_TEN_BIT_MASK >>> 10) + 0xD800u
 
-        let trailSurrogate =
-            (codePoint &&& LOW_TEN_BIT_MASK) + 0xDC00u
+        let trailSurrogate = (codePoint &&& LOW_TEN_BIT_MASK) + 0xDC00u
 
         char leadSurrogate, char trailSurrogate

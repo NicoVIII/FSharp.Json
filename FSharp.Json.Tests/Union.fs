@@ -58,8 +58,7 @@ module Union =
 
     [<Test>]
     let ``Union record field case serialization`` () =
-        let expected =
-            RecordCase { TheRecord.Value = "The string" }
+        let expected = RecordCase { TheRecord.Value = "The string" }
 
         let json = Json.serialize (expected)
         let actual = Json.deserialize<TheUnion> json
@@ -90,31 +89,26 @@ module Union =
 
     [<Test>]
     let ``Union key-value serialization`` () =
-        let value =
-            TheAnnotatedUnion.StringCase "The string"
+        let value = TheAnnotatedUnion.StringCase "The string"
 
         let actual = Json.serializeU value
 
-        let expected =
-            """{"casekey":"StringCase","casevalue":"The string"}"""
+        let expected = """{"casekey":"StringCase","casevalue":"The string"}"""
 
         ClassicAssert.AreEqual(expected, actual)
 
     [<Test>]
     let ``Union key-value deserialization`` () =
-        let expected =
-            TheAnnotatedUnion.StringCase "The string"
+        let expected = TheAnnotatedUnion.StringCase "The string"
 
-        let json =
-            """{"casekey":"StringCase","casevalue":"The string"}"""
+        let json = """{"casekey":"StringCase","casevalue":"The string"}"""
 
         let actual = Json.deserialize<TheAnnotatedUnion> json
         ClassicAssert.AreEqual(expected, actual)
 
     [<Test>]
     let ``Union key-value deserialization (more than 2 fields)`` () =
-        let expected =
-            TheAnnotatedUnion.StringCase "The string"
+        let expected = TheAnnotatedUnion.StringCase "The string"
 
         let json =
             """{"casekey":"StringCase","casevalue":"The string","unrelated_property":"unrelated_value"}"""
@@ -138,28 +132,27 @@ module Union =
         let json = """{"one_field_case":"The string"}"""
         let expected = OneFieldCase "The string"
 
-        let config =
-            JsonConfig.create (jsonFieldNaming = Json.snakeCase)
+        let config = JsonConfig.create (jsonFieldNaming = Json.snakeCase)
 
         let actual = Json.deserializeEx<TheUnion> config json
         ClassicAssert.AreEqual(expected, actual)
 
-    [<JsonUnion(Mode = UnionMode.CaseKeyDiscriminatorField, CaseKeyField="discriminator")>]
+    [<JsonUnion(Mode = UnionMode.CaseKeyDiscriminatorField, CaseKeyField = "discriminator")>]
     type TheDiscriminatorUnion =
-    | StringCase of string
-    | RecordCase of TheRecord
+        | StringCase of string
+        | RecordCase of TheRecord
 
     [<Test>]
     let ``Union discriminator record case serialization`` () =
-        let value = TheDiscriminatorUnion.RecordCase {TheRecord.Value = "The string"}
+        let value = TheDiscriminatorUnion.RecordCase { TheRecord.Value = "The string" }
         let actual = Json.serializeU value
         let expected = """{"discriminator":"RecordCase","Value":"The string"}"""
         ClassicAssert.AreEqual(expected, actual)
 
     [<Test>]
     let ``Union discriminator record case deserialization`` () =
-        let expected = TheDiscriminatorUnion.RecordCase {TheRecord.Value = "The string"}
-        let json = Json.serialize(expected)
+        let expected = TheDiscriminatorUnion.RecordCase { TheRecord.Value = "The string" }
+        let json = Json.serialize (expected)
         let actual = Json.deserialize<TheDiscriminatorUnion> json
         ClassicAssert.AreEqual(expected, actual)
 
@@ -169,8 +162,9 @@ module Union =
 
     [<Test>]
     let ``Union single case serialization`` () =
-        let value =
-            { SingleCaseRecord.value = SingleCase "The string" }
+        let value = {
+            SingleCaseRecord.value = SingleCase "The string"
+        }
 
         let actual = Json.serializeU value
         let expected = """{"value":"The string"}"""
@@ -178,8 +172,9 @@ module Union =
 
     [<Test>]
     let ``Union single case deserialization`` () =
-        let expected =
-            { SingleCaseRecord.value = SingleCase "The string" }
+        let expected = {
+            SingleCaseRecord.value = SingleCase "The string"
+        }
 
         let json = Json.serialize (expected)
         let actual = Json.deserialize<SingleCaseRecord> json

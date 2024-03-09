@@ -7,16 +7,14 @@ module internal Reflection =
     open Microsoft.FSharp.Reflection
 
     let isOption_ (t: Type) : bool =
-        t.IsGenericType
-        && t.GetGenericTypeDefinition() = typedefof<option<_>>
+        t.IsGenericType && t.GetGenericTypeDefinition() = typedefof<option<_>>
 
     let getOptionType_ (t: Type) : Type = t.GetGenericArguments().[0]
 
     let isArray_ (t: Type) = t.IsArray
 
     let isList_ (t: Type) =
-        t.IsGenericType
-        && t.GetGenericTypeDefinition() = typedefof<List<_>>
+        t.IsGenericType && t.GetGenericTypeDefinition() = typedefof<List<_>>
 
     let getType (o: obj) =
         match o with
@@ -24,7 +22,7 @@ module internal Reflection =
         | _ -> o.GetType()
 
     let getListType_ (itemType: Type) =
-        typedefof<List<_>>.MakeGenericType ([| itemType |])
+        typedefof<List<_>>.MakeGenericType([| itemType |])
 
     let getListItemType_ (t: Type) = t.GetGenericArguments().[0]
 
@@ -33,14 +31,13 @@ module internal Reflection =
     let getListEmptyProperty_ (t: Type) = t.GetProperty("Empty")
 
     let getIEnumerableType_ (itemType: Type) =
-        typedefof<seq<_>>.MakeGenericType ([| itemType |])
+        typedefof<seq<_>>.MakeGenericType([| itemType |])
 
     let isSet_ (t: Type) =
-        t.IsGenericType
-        && t.GetGenericTypeDefinition() = typedefof<Set<_>>
+        t.IsGenericType && t.GetGenericTypeDefinition() = typedefof<Set<_>>
 
     let getSetType_ (itemType: Type) =
-        typedefof<Set<_>>.MakeGenericType ([| itemType |])
+        typedefof<Set<_>>.MakeGenericType([| itemType |])
 
     let getSetItemType_ (t: Type) = t.GetGenericArguments().[0]
 
@@ -48,11 +45,10 @@ module internal Reflection =
     let getSetAdd_ (t: Type) = t.GetMethod("Add")
 
     let isResizeArray_ (t: Type) =
-        t.IsGenericType
-        && t.GetGenericTypeDefinition() = typedefof<ResizeArray<_>>
+        t.IsGenericType && t.GetGenericTypeDefinition() = typedefof<ResizeArray<_>>
 
     let getResizeArrayType_ (itemType: Type) =
-        typedefof<ResizeArray<_>>.MakeGenericType ([| itemType |])
+        typedefof<ResizeArray<_>>.MakeGenericType([| itemType |])
 
     let getResizeArrayItemType_ (t: Type) = t.GetGenericArguments().[0]
 
@@ -61,16 +57,14 @@ module internal Reflection =
     let getResizeArrayAdd_ (t: Type) = t.GetMethod("Add")
 
     let isMap_ (t: Type) =
-        t.IsGenericType
-        && t.GetGenericTypeDefinition() = typedefof<Map<_, _>>
+        t.IsGenericType && t.GetGenericTypeDefinition() = typedefof<Map<_, _>>
 
     let getMapKeyType_ (t: Type) = t.GetGenericArguments().[0]
 
     let getMapValueType_ (t: Type) = t.GetGenericArguments().[1]
 
     let getMapKvpTupleType_ (t: Type) =
-        t.GetGenericArguments()
-        |> FSharpType.MakeTupleType
+        t.GetGenericArguments() |> FSharpType.MakeTupleType
 
     let cacheResult (theFunction: 'P -> 'R) =
         let theFunction = new Func<_, _>(theFunction)
@@ -79,16 +73,15 @@ module internal Reflection =
 
     let isRecord: Type -> bool = FSharpType.IsRecord |> cacheResult
 
-    let getRecordFields: Type -> PropertyInfo [] =
+    let getRecordFields: Type -> PropertyInfo[] =
         FSharpType.GetRecordFields |> cacheResult
 
     let isUnion: Type -> bool = FSharpType.IsUnion |> cacheResult
-    let getUnionCases: Type -> UnionCaseInfo [] = FSharpType.GetUnionCases |> cacheResult
+    let getUnionCases: Type -> UnionCaseInfo[] = FSharpType.GetUnionCases |> cacheResult
 
     let isTuple: Type -> bool = FSharpType.IsTuple |> cacheResult
 
-    let getTupleElements: Type -> Type [] =
-        FSharpType.GetTupleElements |> cacheResult
+    let getTupleElements: Type -> Type[] = FSharpType.GetTupleElements |> cacheResult
 
     let isOption: Type -> bool = isOption_ |> cacheResult
     let getOptionType: Type -> Type = getOptionType_ |> cacheResult
@@ -99,14 +92,19 @@ module internal Reflection =
     let getListType: Type -> Type = getListType_ |> cacheResult
     let getListItemType: Type -> Type = getListItemType_ |> cacheResult
     let getListConstructor: Type -> MethodInfo = getListConstructor_ |> cacheResult
-    let getListEmptyProperty: Type -> PropertyInfo = getListEmptyProperty_ |> cacheResult
+
+    let getListEmptyProperty: Type -> PropertyInfo =
+        getListEmptyProperty_ |> cacheResult
 
     let getIEnumerableType: Type -> Type = getIEnumerableType_ |> cacheResult
 
     let isSet: Type -> bool = isSet_ |> cacheResult
     let getSetType: Type -> Type = getSetType_ |> cacheResult
     let getSetItemType: Type -> Type = getSetItemType_ |> cacheResult
-    let getSetConstructor: Type * Type -> ConstructorInfo = getSetConstructor_ |> cacheResult
+
+    let getSetConstructor: Type * Type -> ConstructorInfo =
+        getSetConstructor_ |> cacheResult
+
     let getSetAdd: Type -> MethodInfo = getSetAdd_ |> cacheResult
 
     let isResizeArray: Type -> bool = isResizeArray_ |> cacheResult
@@ -144,8 +142,7 @@ module internal Reflection =
         let addItem item list =
             theConstructor.Invoke(null, [| item; list |])
 
-        let theList =
-            (getListEmptyProperty listType).GetValue(null)
+        let theList = (getListEmptyProperty listType).GetValue(null)
 
         List.foldBack addItem items theList
 
@@ -154,14 +151,12 @@ module internal Reflection =
         let enumType = getIEnumerableType itemType
         let setConstructor = getSetConstructor (setType, enumType)
 
-        let listEmpty =
-            getListType itemType |> getListEmptyProperty
+        let listEmpty = getListType itemType |> getListEmptyProperty
 
         let setAdd item set =
             setType.GetMethod("Add").Invoke(set, [| item |])
 
-        let newSet =
-            setConstructor.Invoke([| listEmpty.GetValue(null) |])
+        let newSet = setConstructor.Invoke([| listEmpty.GetValue(null) |])
 
         List.foldBack setAdd items newSet
 
@@ -169,15 +164,11 @@ module internal Reflection =
         let resizeArrayType = getResizeArrayType itemType
 
         let resizeArrayAdd resizeArray item =
-            (getResizeArrayAdd resizeArrayType)
-                .Invoke(resizeArray, [| item |])
-            |> ignore
+            (getResizeArrayAdd resizeArrayType).Invoke(resizeArray, [| item |]) |> ignore
 
             resizeArray
 
-        let newResizeArray =
-            (getResizeArrayConstructor resizeArrayType)
-                .Invoke([||])
+        let newResizeArray = (getResizeArrayConstructor resizeArrayType).Invoke([||])
 
         List.fold resizeArrayAdd newResizeArray items
 

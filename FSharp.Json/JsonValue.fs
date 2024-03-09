@@ -33,8 +33,8 @@ type internal JsonValue =
     | String of string
     | Number of decimal
     | Float of float
-    | Record of properties: (string * JsonValue) []
-    | Array of elements: JsonValue []
+    | Record of properties: (string * JsonValue)[]
+    | Array of elements: JsonValue[]
     | Boolean of bool
     | Null
 
@@ -57,11 +57,7 @@ type internal JsonValue =
             else
                 fun _ _ -> ()
 
-        let propSep =
-            if saveOptions = JsonSaveOptions.None then
-                "\": "
-            else
-                "\":"
+        let propSep = if saveOptions = JsonSaveOptions.None then "\": " else "\":"
 
         let rec serialize indentation =
             function
@@ -78,7 +74,10 @@ type internal JsonValue =
 
                 for i = 0 to properties.Length - 1 do
                     let k, v = properties.[i]
-                    if i > 0 then w.Write ","
+
+                    if i > 0 then
+                        w.Write ","
+
                     newLine indentation 2
                     w.Write "\""
                     JsonValue.JsonStringEncodeTo w k
@@ -91,7 +90,9 @@ type internal JsonValue =
                 w.Write "["
 
                 for i = 0 to elements.Length - 1 do
-                    if i > 0 then w.Write ","
+                    if i > 0 then
+                        w.Write ","
+
                     newLine indentation 2
                     serialize (indentation + 2) elements.[i]
 
@@ -112,9 +113,7 @@ type internal JsonValue =
                 let c = value.[i]
                 let ci = int c
 
-                if ci >= 0 && ci <= 7
-                   || ci = 11
-                   || ci >= 14 && ci <= 31 then
+                if ci >= 0 && ci <= 7 || ci = 11 || ci >= 14 && ci <= 31 then
                     w.Write("\\u{0:x4}", ci) |> ignore
                 else
                     match c with
@@ -128,8 +127,7 @@ type internal JsonValue =
                     | _ -> w.Write c
 
     member x.ToString saveOptions =
-        let w =
-            new StringWriter(CultureInfo.InvariantCulture)
+        let w = new StringWriter(CultureInfo.InvariantCulture)
 
         x.WriteTo(w, saveOptions)
         w.GetStringBuilder().ToString()
@@ -159,8 +157,7 @@ module internal JsonValue =
 
 type private JsonParser(jsonText: string, cultureInfo, tolerateErrors) =
 
-    let cultureInfo =
-        defaultArg cultureInfo CultureInfo.InvariantCulture
+    let cultureInfo = defaultArg cultureInfo CultureInfo.InvariantCulture
 
     let mutable i = 0
     let s = jsonText
@@ -173,8 +170,7 @@ type private JsonParser(jsonText: string, cultureInfo, tolerateErrors) =
         while i < s.Length && Char.IsWhiteSpace s.[i] do
             i <- i + 1
 
-    let decimalSeparator =
-        cultureInfo.NumberFormat.NumberDecimalSeparator.[0]
+    let decimalSeparator = cultureInfo.NumberFormat.NumberDecimalSeparator.[0]
 
     let isNumChar c =
         Char.IsDigit c
@@ -189,7 +185,7 @@ type private JsonParser(jsonText: string, cultureInfo, tolerateErrors) =
             sprintf
                 "Invalid JSON starting at character %d, snippet = \n----\n%s\n-----\njson = \n------\n%s\n-------"
                 i
-                (jsonText.[(max 0 (i - 10))..(min (jsonText.Length - 1) (i + 10))])
+                (jsonText.[(max 0 (i - 10)) .. (min (jsonText.Length - 1) (i + 10))])
                 (if jsonText.Length > 1000 then
                      jsonText.Substring(0, 1000)
                  else
@@ -197,7 +193,9 @@ type private JsonParser(jsonText: string, cultureInfo, tolerateErrors) =
 
         failwith msg
 
-    let ensure cond = if not cond then throw ()
+    let ensure cond =
+        if not cond then
+            throw ()
 
     // Recursive descent parser for JSON that uses global mutable index
     let rec parseValue () =
@@ -245,14 +243,10 @@ type private JsonParser(jsonText: string, cultureInfo, tolerateErrors) =
                     ensure (i + 5 < s.Length)
 
                     let hexdigit d =
-                        if d >= '0' && d <= '9' then
-                            int32 d - int32 '0'
-                        elif d >= 'a' && d <= 'f' then
-                            int32 d - int32 'a' + 10
-                        elif d >= 'A' && d <= 'F' then
-                            int32 d - int32 'A' + 10
-                        else
-                            failwith "hexdigit"
+                        if d >= '0' && d <= '9' then int32 d - int32 '0'
+                        elif d >= 'a' && d <= 'f' then int32 d - int32 'a' + 10
+                        elif d >= 'A' && d <= 'F' then int32 d - int32 'A' + 10
+                        else failwith "hexdigit"
 
                     let unicodeChar (s: string) =
                         if s.Length <> 4 then
@@ -404,7 +398,10 @@ type private JsonParser(jsonText: string, cultureInfo, tolerateErrors) =
     member x.Parse() =
         let value = parseRootValue ()
         skipWhitespace ()
-        if i <> s.Length then throw ()
+
+        if i <> s.Length then
+            throw ()
+
         value
 
     member x.ParseMultiple() =
@@ -437,5 +434,4 @@ type JsonValue with
 
     /// Parses the specified string into multiple JSON values
     static member ParseMultiple(text, [<Optional>] ?cultureInfo) =
-        JsonParser(text, cultureInfo, false)
-            .ParseMultiple()
+        JsonParser(text, cultureInfo, false).ParseMultiple()

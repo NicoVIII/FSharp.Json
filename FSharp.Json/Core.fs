@@ -146,15 +146,9 @@ module internal Core =
                 | t when t = typeof<string> -> JsonValue.String(value :?> string)
                 | t when t = typeof<char> -> JsonValue.String(string (value :?> char))
                 | t when t = typeof<DateTime> ->
-                    JsonValue.String(
-                        (value :?> DateTime)
-                            .ToString(jsonField.DateTimeFormat)
-                    )
+                    JsonValue.String((value :?> DateTime).ToString(jsonField.DateTimeFormat))
                 | t when t = typeof<DateTimeOffset> ->
-                    JsonValue.String(
-                        (value :?> DateTimeOffset)
-                            .ToString(jsonField.DateTimeFormat)
-                    )
+                    JsonValue.String((value :?> DateTimeOffset).ToString(jsonField.DateTimeFormat))
                 | t when t = typeof<Guid> -> JsonValue.String((value :?> Guid).ToString())
                 | t when t.IsEnum -> serializeEnum t jsonField value
                 | t when
@@ -168,16 +162,14 @@ module internal Core =
                     || isResizeArray t
                     ->
                     serialize config t value
-                | _ ->
-                    failSerialization
-                    <| sprintf "Unknown type: %s" t.Name
+                | _ -> failSerialization <| sprintf "Unknown type: %s" t.Name
             | true ->
                 let value = value :?> string
 
                 try
                     JsonValue.Parse value
-                with
-                | ex -> JsonValue.String value
+                with ex ->
+                    JsonValue.String value
 
         let serializeUnwrapOption (t: Type) (jsonField: JsonField) (value: obj) : JsonValue option =
             match t with
@@ -244,10 +236,7 @@ module internal Core =
         let serializeRecord (t: Type) (therec: obj) : JsonValue =
             let props: PropertyInfo array = getRecordFields (t)
 
-            let fields =
-                props
-                |> Array.map (serializeProperty therec)
-                |> Array.choose id
+            let fields = props |> Array.map (serializeProperty therec) |> Array.choose id
 
             JsonValue.Record fields
 
@@ -263,9 +252,7 @@ module internal Core =
             | _ ->
                 let jsonField = getJsonFieldUnionCase caseInfo
 
-                let types =
-                    caseInfo.GetFields()
-                    |> Array.map (fun p -> p.PropertyType)
+                let types = caseInfo.GetFields() |> Array.map (fun p -> p.PropertyType)
 
                 let jvalue =
                     match values.Length with
@@ -423,9 +410,7 @@ module internal Core =
                         || isResizeArray t
                         ->
                         deserialize config path t jvalue
-                    | _ ->
-                        failDeserialization path
-                        <| sprintf "Not supported type: %s" t.Name
+                    | _ -> failDeserialization path <| sprintf "Not supported type: %s" t.Name
 
                 transformFromTargetType jsonField.Transform jvalue
 
@@ -436,9 +421,7 @@ module internal Core =
                 | Some jvalue ->
                     match jvalue with
                     | JsonValue.Null -> optionNone t
-                    | _ ->
-                        deserializeNonOption path (getOptionType t) jsonField jvalue
-                        |> optionSome t
+                    | _ -> deserializeNonOption path (getOptionType t) jsonField jvalue |> optionSome t
                 | None ->
                     match config.deserializeOption with
                     | RequireNull ->
@@ -508,9 +491,7 @@ module internal Core =
 
                 let arrayValues = deserializeArrayItems path itemType jvalues
 
-                arrayValues
-                |> List.ofSeq
-                |> createResizeArray itemType
+                arrayValues |> List.ofSeq |> createResizeArray itemType
             | _ -> failDeserialization path "Failed to parse resize array from JSON that is not array."
 
         let deserializeArray (path: JsonPath) (t: Type) (jvalue: JsonValue) : obj =
@@ -522,13 +503,12 @@ module internal Core =
 
                 let arr = Array.CreateInstance(itemType, arrayValues.Length)
 
-                arrayValues
-                |> Array.iteri (fun index value -> arr.SetValue(value, index))
+                arrayValues |> Array.iteri (fun index value -> arr.SetValue(value, index))
 
                 arr :> obj
             | _ -> failDeserialization path "Failed to parse array from JSON that is not array."
 
-        let deserializeTupleElements (path: JsonPath) (types: Type []) (jvalue: JsonValue) : obj [] =
+        let deserializeTupleElements (path: JsonPath) (types: Type[]) (jvalue: JsonValue) : obj[] =
             match jvalue with
             | JsonValue.Array values ->
                 if types.Length <> values.Length then
@@ -570,9 +550,7 @@ module internal Core =
             | JsonValue.Record fields ->
                 let props: PropertyInfo array = getRecordFields t
 
-                let propsValues =
-                    props
-                    |> Array.map (deserializeProperty path fields)
+                let propsValues = props |> Array.map (deserializeProperty path fields)
 
                 FSharpValue.MakeRecord(t, propsValues)
             | _ -> failDeserialization path "Failed to parse record from JSON that is not object."
@@ -591,7 +569,7 @@ module internal Core =
                 failDeserialization path
                 <| sprintf "Failed to parse union, unable to find union case: %s." jCaseName
 
-        let mustFindField (path: JsonPath) (fieldName: string) (fields: (string * JsonValue) []) : string * JsonValue =
+        let mustFindField (path: JsonPath) (fieldName: string) (fields: (string * JsonValue)[]) : string * JsonValue =
             let caseKeyField = fields |> Seq.tryFind (fun f -> fst f = fieldName)
 
             match caseKeyField with
@@ -610,7 +588,9 @@ module internal Core =
 
             let values =
                 match props with
-                | [| prop |] -> [| deserializeUnwrapOption casePath prop.PropertyType fieldAttr (Some jCaseValue) |]
+                | [| prop |] -> [|
+                    deserializeUnwrapOption casePath prop.PropertyType fieldAttr (Some jCaseValue)
+                  |]
                 | _ ->
                     let propsTypes = props |> Array.map (fun p -> p.PropertyType)
 
@@ -645,14 +625,9 @@ module internal Core =
                         let caseKeyFieldName, caseKeyFieldValue =
                             mustFindField path jsonUnion.CaseKeyField fields
 
-                        let caseNamePath =
-                            caseKeyFieldName
-                            |> JsonPathItem.Field
-                            |> path.createNew
+                        let caseNamePath = caseKeyFieldName |> JsonPathItem.Field |> path.createNew
 
-                        let jCaseName =
-                            caseKeyFieldValue
-                            |> JsonValueHelpers.getString caseNamePath
+                        let jCaseName = caseKeyFieldValue |> JsonValueHelpers.getString caseNamePath
 
                         makeUnion path t jCaseName jvalue
                     | UnionMode.CaseKeyAsFieldValue ->
@@ -661,14 +636,9 @@ module internal Core =
 
                         let _, jCaseValue = mustFindField path jsonUnion.CaseValueField fields
 
-                        let caseNamePath =
-                            caseKeyFieldName
-                            |> JsonPathItem.Field
-                            |> path.createNew
+                        let caseNamePath = caseKeyFieldName |> JsonPathItem.Field |> path.createNew
 
-                        let jCaseName =
-                            caseKeyFieldValue
-                            |> JsonValueHelpers.getString caseNamePath
+                        let jCaseName = caseKeyFieldValue |> JsonValueHelpers.getString caseNamePath
 
                         makeUnion path t jCaseName jCaseValue
                     | UnionMode.CaseKeyAsFieldName ->

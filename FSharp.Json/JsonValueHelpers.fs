@@ -109,8 +109,7 @@ module internal JsonValueHelpers =
     let getDateTime cultureInfo (path: JsonPath) (jvalue: JsonValue) =
         match jvalue with
         | JsonValue.String value ->
-            let jvalue =
-                TextConversions.AsDateTime cultureInfo value
+            let jvalue = TextConversions.AsDateTime cultureInfo value
 
             match jvalue with
             | Some jvalue -> jvalue

@@ -17,8 +17,7 @@ module Map =
         let json = """{"key":"value"}"""
         let expected = Map.ofList [ ("key", "value") ]
 
-        let actual =
-            Json.deserialize<Map<string, string>> json
+        let actual = Json.deserialize<Map<string, string>> json
 
         ClassicAssert.AreEqual(expected, actual)
 
@@ -26,9 +25,7 @@ module Map =
     let ``Map<string,obj> serialization`` () =
         let expected = """{"key1":"value","key2":123}"""
 
-        let value =
-            Map.ofList [ ("key1", "value" :> obj)
-                         ("key2", 123 :> obj) ]
+        let value = Map.ofList [ ("key1", "value" :> obj); ("key2", 123 :> obj) ]
 
         let actual = Json.serializeU value
         ClassicAssert.AreEqual(expected, actual)
@@ -37,20 +34,17 @@ module Map =
     let ``Map<string,obj> deserialization`` () =
         let json = """{"key1":"value","key2":123}"""
 
-        let expected =
-            Map.ofList [ ("key1", "value" :> obj)
-                         ("key2", 123 :> obj) ]
+        let expected = Map.ofList [ ("key1", "value" :> obj); ("key2", 123 :> obj) ]
 
         let config = JsonConfig.create (allowUntyped = true)
 
-        let actual =
-            Json.deserializeEx<Map<string, obj>> config json
+        let actual = Json.deserializeEx<Map<string, obj>> config json
 
         ClassicAssert.AreEqual(expected, actual)
 
     [<Test>]
     let ``Map<string,null> serialization`` () =
         let expected = """{"key1":[null],"key2":null}"""
-        let value = Map.ofList [("key1", [()] :> obj); ("key2", null)]
+        let value = Map.ofList [ ("key1", [ () ] :> obj); ("key2", null) ]
         let actual = Json.serializeU value
         ClassicAssert.AreEqual(expected, actual)

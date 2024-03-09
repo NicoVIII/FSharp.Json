@@ -11,13 +11,11 @@ module Object =
     let ``Object serialization/deserialization`` () =
         let expected = { ObjectRecord.value = "The string" }
 
-        let config =
-            JsonConfig.create (allowUntyped = true, unformatted = true)
+        let config = JsonConfig.create (allowUntyped = true, unformatted = true)
 
         let json = Json.serializeEx config expected
 
-        let actual =
-            Json.deserializeEx<ObjectRecord> config json
+        let actual = Json.deserializeEx<ObjectRecord> config json
 
         ClassicAssert.AreEqual(expected, actual)
 
@@ -31,12 +29,10 @@ module Object =
 
         let expected = { ObjectRecord.value = expectedMap }
 
-        let config =
-            JsonConfig.create (allowUntyped = true, unformatted = true)
+        let config = JsonConfig.create (allowUntyped = true, unformatted = true)
 
         let json = Json.serializeEx config expected
 
-        let actual =
-            Json.deserializeEx<ObjectRecord> config json
+        let actual = Json.deserializeEx<ObjectRecord> config json
 
         ClassicAssert.AreEqual(expected, actual)

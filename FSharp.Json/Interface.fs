@@ -16,15 +16,11 @@ module Json =
         let regex =
             @"(?<=[A-Z])(?=[A-Z][a-z])|(?<=[^A-Z])(?=[A-Z])|(?<=[A-Za-z])(?=[^A-Za-z])"
 
-        let words =
-            Regex.Split(name, regex)
-            |> List.ofArray
-            |> List.map toLower
+        let words = Regex.Split(name, regex) |> List.ofArray |> List.map toLower
 
         let first = List.head words
 
-        let tail =
-            List.tail words |> List.map firstCharCapital
+        let tail = List.tail words |> List.map firstCharCapital
 
         let parts = [ first.ToLower() ] @ tail
         String.Join("", parts)
@@ -34,17 +30,13 @@ module Json =
         let regex =
             @"(?<=[A-Z])(?=[A-Z][a-z])|(?<=[^A-Z])(?=[A-Z])|(?<=[A-Za-z])(?=[^A-Za-z])"
 
-        let words =
-            Regex.Split(name, regex)
-            |> List.ofArray
-            |> List.map toLower
+        let words = Regex.Split(name, regex) |> List.ofArray |> List.map toLower
 
         String.Join("_", words)
 
     /// Serailizes F# object into JSON. Uses provided [JsonConfig].
     let serializeEx (config: JsonConfig) (theobj: obj) : string =
-        let json =
-            Core.serialize config (theobj.GetType()) theobj
+        let json = Core.serialize config (theobj.GetType()) theobj
 
         let saveOptions =
             match config.unformatted with

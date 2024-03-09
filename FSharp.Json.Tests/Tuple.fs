@@ -8,8 +8,9 @@ module Tuple =
 
     [<Test>]
     let ``Tuple serialization/deserialization`` () =
-        let expected =
-            { TheTuple.value = ("The string", 123, true) }
+        let expected = {
+            TheTuple.value = ("The string", 123, true)
+        }
 
         let json = Json.serialize (expected)
         let actual = Json.deserialize<TheTuple> json
@@ -17,8 +18,9 @@ module Tuple =
 
     [<Test>]
     let ``Tuple serialized as array`` () =
-        let value =
-            { TheTuple.value = ("The string", 123, true) }
+        let value = {
+            TheTuple.value = ("The string", 123, true)
+        }
 
         let actual = Json.serializeU value
         let expected = """{"value":["The string",123,true]}"""
@@ -28,8 +30,9 @@ module Tuple =
 
     [<Test>]
     let ``Tuple with optional serialization`` () =
-        let value =
-            { TheTupleWithOption.value = ("The string", None, true) }
+        let value = {
+            TheTupleWithOption.value = ("The string", None, true)
+        }
 
         let actual = Json.serializeU value
         let expected = """{"value":["The string",null,true]}"""
@@ -37,12 +40,12 @@ module Tuple =
 
     [<Test>]
     let ``Tuple with optional deserialization`` () =
-        let expected =
-            { TheTupleWithOption.value = ("The string", None, true) }
+        let expected = {
+            TheTupleWithOption.value = ("The string", None, true)
+        }
 
         let json = """{"value":["The string",null,true]}"""
 
-        let actual =
-            Json.deserialize<TheTupleWithOption> json
+        let actual = Json.deserialize<TheTupleWithOption> json
 
         ClassicAssert.AreEqual(expected, actual)

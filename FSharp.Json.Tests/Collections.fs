@@ -59,8 +59,7 @@ module Collections =
         let expected = [ "some"; "text" ] |> ResizeArray
         let json = Json.serialize (expected)
 
-        let actual =
-            Json.deserialize<ResizeArray<string>> json
+        let actual = Json.deserialize<ResizeArray<string>> json
 
         ClassicAssert.AreEqual(expected, actual)
 
@@ -90,7 +89,6 @@ module Collections =
         let expected = ResizeArray<string>()
         let json = Json.serialize (expected)
 
-        let actual =
-            Json.deserialize<ResizeArray<string>> json
+        let actual = Json.deserialize<ResizeArray<string>> json
 
         ClassicAssert.AreEqual(expected, actual)

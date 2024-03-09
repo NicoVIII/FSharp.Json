@@ -29,8 +29,7 @@ module Option =
 
     [<Test>]
     let ``Option None serialization into null by default`` () =
-        let actual =
-            Json.serializeU { TheOption.value = None }
+        let actual = Json.serializeU { TheOption.value = None }
 
         let expected = """{"value":null}"""
         ClassicAssert.AreEqual(expected, actual)
@@ -73,11 +72,9 @@ module Option =
     let ``JsonConfig.deserializeOption - member with None value can't be omitted`` () =
         let json = """{}"""
 
-        let config =
-            JsonConfig.create (deserializeOption = DeserializeOption.RequireNull)
+        let config = JsonConfig.create (deserializeOption = DeserializeOption.RequireNull)
 
-        let ex =
-            assertDeserializationThrows<TheOption> config json
+        let ex = assertDeserializationThrows<TheOption> config json
 
         let expectedPath = "value"
         ClassicAssert.AreEqual(expectedPath, ex.Path.toString ())
@@ -87,11 +84,9 @@ module Option =
         let json = """{}"""
         let expected = { TheOption.value = None }
 
-        let config =
-            JsonConfig.create (deserializeOption = DeserializeOption.AllowOmit)
+        let config = JsonConfig.create (deserializeOption = DeserializeOption.AllowOmit)
 
-        let actual =
-            Json.deserializeEx<TheOption> config json
+        let actual = Json.deserializeEx<TheOption> config json
 
         ClassicAssert.AreEqual(expected, actual)
 
@@ -100,11 +95,9 @@ module Option =
         let json = """{"value":null}"""
         let expected = { TheOption.value = None }
 
-        let config =
-            JsonConfig.create (deserializeOption = DeserializeOption.RequireNull)
+        let config = JsonConfig.create (deserializeOption = DeserializeOption.RequireNull)
 
-        let actual =
-            Json.deserializeEx<TheOption> config json
+        let actual = Json.deserializeEx<TheOption> config json
 
         ClassicAssert.AreEqual(expected, actual)
 
@@ -113,8 +106,7 @@ module Option =
         let config =
             JsonConfig.create (unformatted = true, serializeNone = SerializeNone.Null)
 
-        let actual =
-            Json.serializeEx config { TheOption.value = None }
+        let actual = Json.serializeEx config { TheOption.value = None }
 
         let expected = """{"value":null}"""
         ClassicAssert.AreEqual(expected, actual)
@@ -124,8 +116,7 @@ module Option =
         let config =
             JsonConfig.create (unformatted = true, serializeNone = SerializeNone.Omit)
 
-        let actual =
-            Json.serializeEx config { TheOption.value = None }
+        let actual = Json.serializeEx config { TheOption.value = None }
 
         let expected = """{}"""
         ClassicAssert.AreEqual(expected, actual)
